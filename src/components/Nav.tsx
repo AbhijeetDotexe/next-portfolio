@@ -65,6 +65,8 @@ export default function Nav() {
               id="menuBtn"
               className={`icon-btn menu-btn ${menuOpen ? "open" : ""}`}
               aria-label="Menu"
+              aria-expanded={menuOpen}
+              aria-controls="mobileMenu"
               onClick={toggleMenu}
             >
               <span></span>

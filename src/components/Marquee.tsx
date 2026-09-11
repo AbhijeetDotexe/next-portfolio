@@ -8,9 +8,8 @@ const items = [
   "mongodb",
   "aws lambda",
   "docker",
-  "kubernetes",
   "redis",
-  "graphql",
+  "express",
   "nginx",
   "openwhisk",
 ];

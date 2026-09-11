@@ -5,11 +5,11 @@ import ProjectFilter from "@/components/ProjectFilter";
 import MagneticBtn from "@/components/MagneticBtn";
 
 export const metadata: Metadata = {
-  title: "Projects · Abhijeet Rana — Full Stack Engineer",
+  title: "Projects",
   description:
-    "Case studies of production systems by Abhijeet Rana: AI invoice automation, serverless FaaS platforms, and distributed architecture.",
+    "Case studies of production systems: AI invoice automation, serverless FaaS, and the rest of the archive.",
   alternates: {
-    canonical: "https://abhijeetrana.com/projects",
+    canonical: "/projects",
   },
 };
 

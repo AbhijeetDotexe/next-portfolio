@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Abhijeet Rana — portfolio
 
-## Getting Started
+Personal site for [abhijeetrana.com](https://abhijeetrana.com): selected work, case studies, and engineering notes.
 
-First, run the development server:
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## Environment
+
+Copy these into `.env.local` when you want the contact and subscribe forms to send real mail:
+
+```bash
+RESEND_API_KEY=re_...
+# Optional. Defaults to Resend's onboarding sender (dev only).
+RESEND_FROM=Portfolio <hello@abhijeetrana.com>
+```
+
+Without `RESEND_API_KEY`, local requests succeed in simulation. Production returns 503 so the UI does not pretend mail was sent.
+
+## Content
+
+- Projects: `src/data/projects.ts` (home, `/projects`, and `/projects/[slug]` case studies)
+- Essays: `src/content/blog.ts` (list, `/blog/[slug]`, sitemap, RSS at `/feed.xml`)
+- Résumé: `src/data/resume.ts` → `/resume` (print-friendly; use browser Save as PDF)
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm start
+npm run lint
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

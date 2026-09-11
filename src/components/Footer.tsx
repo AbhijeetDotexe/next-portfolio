@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { SITE } from "@/data/site";
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -10,22 +13,19 @@ export default function Footer() {
             © <span id="year">{currentYear}</span> · crafted with intent
           </span>
           <span>
-            <a
-              href="https://github.com/abhijeetdotexe"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link href="/resume">résumé</Link>
+            {" · "}
+            <a href={SITE.githubUrl} target="_blank" rel="noopener noreferrer">
               github
-            </a>{" "}
-            ·{" "}
-            <a
-              href="https://linkedin.com/in/abhijeetrana/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            </a>
+            {" · "}
+            <a href={SITE.linkedinUrl} target="_blank" rel="noopener noreferrer">
               linkedin
-            </a>{" "}
-            · <a href="mailto:abhijeet4rana@gmail.com">email</a>
+            </a>
+            {" · "}
+            <a href={`mailto:${SITE.email}`}>email</a>
+            {" · "}
+            <Link href="/feed.xml">rss</Link>
           </span>
           <span className="status">
             <i></i>all systems normal

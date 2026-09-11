@@ -1,68 +1,24 @@
-"use client";
-
-import React, { useState } from "react";
+import type { Metadata } from "next";
+import Link from "next/link";
 import ScrambleText from "@/components/ScrambleText";
 import ScrollReveal from "@/components/ScrollReveal";
 import SpotlightCard from "@/components/SpotlightCard";
-import MagneticBtn from "@/components/MagneticBtn";
 import ISTClock from "@/components/ISTClock";
+import ContactForm from "@/components/ContactForm";
+import { SITE } from "@/data/site";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Open to full-stack roles, contract engineering, and technical advisory. Replies within 24 hours.",
+  alternates: { canonical: "/contact" },
+};
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    topic: "",
-    message: "",
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setStatusMessage(null);
-
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        setStatusMessage({
-          type: "success",
-          text: data.simulated
-            ? "✓ Message received! (Dev Mode: Real email will send once RESEND_API_KEY is configured)."
-            : "✓ Message sent successfully! I'll get back to you within 24 hours.",
-        });
-        setFormData({ name: "", email: "", topic: "", message: "" });
-      } else {
-        setStatusMessage({
-          type: "error",
-          text: data.error || "Failed to send message. Please try again.",
-        });
-      }
-    } catch {
-      setStatusMessage({
-        type: "error",
-        text: "Connection error. Please check your network or email directly.",
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
     <main>
       <section className="hero">
         <div className="container hero-grid">
-          {/* LEFT : intro + direct channels */}
           <div>
             <ScrambleText text="contact · replies within 24h" />
             <h1 className="h1">
@@ -84,13 +40,13 @@ export default function ContactPage() {
             </h1>
             <ScrollReveal>
               <p className="lead">
-                Open to senior full-stack roles, contract engineering and technical
+                Open to full-stack roles, contract engineering and technical
                 advisory. Remote-first, open to relocation (US / EU / UK).
               </p>
             </ScrollReveal>
 
             <ScrollReveal style={{ marginTop: "40px" }}>
-              <a href="mailto:abhijeet4rana@gmail.com" className="card contact-card">
+              <a href={`mailto:${SITE.email}`} className="card contact-card">
                 <span className="ic">
                   <svg
                     viewBox="0 0 24 24"
@@ -106,12 +62,12 @@ export default function ContactPage() {
                 <span>
                   <span className="k">email</span>
                   <br />
-                  <span className="v">abhijeet4rana@gmail.com</span>
+                  <span className="v">{SITE.email}</span>
                 </span>
                 <span className="go">→</span>
               </a>
               <a
-                href="https://linkedin.com/in/abhijeetrana/"
+                href={SITE.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="card contact-card"
@@ -128,8 +84,29 @@ export default function ContactPage() {
                 </span>
                 <span className="go">↗</span>
               </a>
+              <Link href="/resume" className="card contact-card">
+                <span className="ic">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                  </svg>
+                </span>
+                <span>
+                  <span className="k">résumé</span>
+                  <br />
+                  <span className="v">print or save PDF</span>
+                </span>
+                <span className="go">→</span>
+              </Link>
               <a
-                href="https://github.com/abhijeetdotexe"
+                href={SITE.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="card contact-card"
@@ -142,7 +119,7 @@ export default function ContactPage() {
                 <span>
                   <span className="k">github</span>
                   <br />
-                  <span className="v">@abhijeetdotexe</span>
+                  <span className="v">@{SITE.githubUser}</span>
                 </span>
                 <span className="go">↗</span>
               </a>
@@ -159,187 +136,12 @@ export default function ContactPage() {
             </ScrollReveal>
           </div>
 
-          {/* RIGHT : form */}
           <ScrollReveal delay=".15s">
-            <SpotlightCard style={{ padding: "36px" }}>
-              <p className="kicker mono" style={{ marginBottom: "26px" }}>
-                send a message
-              </p>
-
-              {statusMessage && (
-                <div
-                  style={{
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    marginBottom: "20px",
-                    fontSize: ".85rem",
-                    lineHeight: 1.5,
-                    background:
-                      statusMessage.type === "success"
-                        ? "rgba(46, 204, 113, 0.12)"
-                        : "rgba(231, 76, 60, 0.12)",
-                    border: `1px solid ${
-                      statusMessage.type === "success"
-                        ? "rgba(46, 204, 113, 0.3)"
-                        : "rgba(231, 76, 60, 0.3)"
-                    }`,
-                    color:
-                      statusMessage.type === "success" ? "#2ecc71" : "#e74c3c",
-                  }}
-                >
-                  {statusMessage.text}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <div className="field">
-                  <label htmlFor="f-name">name</label>
-                  <input
-                    id="f-name"
-                    name="name"
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="Your name"
-                    autoComplete="name"
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="f-email">email</label>
-                  <input
-                    id="f-email"
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    placeholder="you@company.com"
-                    autoComplete="email"
-                  />
-                </div>
-                <div className="field">
-                  <label htmlFor="f-topic">topic</label>
-                  <select
-                    id="f-topic"
-                    name="topic"
-                    required
-                    value={formData.topic}
-                    onChange={(e) =>
-                      setFormData({ ...formData, topic: e.target.value })
-                    }
-                  >
-                    <option value="" disabled>
-                      select a topic
-                    </option>
-                    <option value="senior full-stack role">
-                      full-stack engineering role
-                    </option>
-                    <option value="contract engineering">
-                      contract engineering
-                    </option>
-                    <option value="technical advisory">
-                      technical advisory
-                    </option>
-                    <option value="speaking / podcast">
-                      speaking / podcast
-                    </option>
-                    <option value="other">other</option>
-                  </select>
-                </div>
-                <div className="field">
-                  <label htmlFor="f-msg">message</label>
-                  <textarea
-                    id="f-msg"
-                    name="message"
-                    rows={5}
-                    required
-                    value={formData.message}
-                    onChange={(e) =>
-                      setFormData({ ...formData, message: e.target.value })
-                    }
-                    placeholder="Tell me about what you're building..."
-                  ></textarea>
-                </div>
-                <MagneticBtn
-                  type="submit"
-                  className={`btn btn-primary ${submitting ? "sending" : ""}`}
-                  style={{
-                    width: "100%",
-                    justifyContent: "center",
-                    marginTop: "8px",
-                    opacity: submitting ? 0.8 : 1,
-                  }}
-                >
-                  {submitting ? (
-                    <span
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      <svg
-                        className="spin"
-                        style={{
-                          animation: "spin 1s linear infinite",
-                          width: "16px",
-                          height: "16px",
-                        }}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                      >
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          strokeDasharray="32"
-                          strokeDashoffset="12"
-                        />
-                      </svg>
-                      sending email...
-                    </span>
-                  ) : (
-                    <>
-                      send message
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      >
-                        <path d="M5 12h14m-6-6 6 6-6 6" />
-                      </svg>
-                    </>
-                  )}
-                </MagneticBtn>
-                <p
-                  className="mono"
-                  style={{
-                    textAlign: "center",
-                    fontSize: ".68rem",
-                    letterSpacing: ".1em",
-                    color: "var(--faint)",
-                    marginTop: "16px",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  response within 24h · powered by resend
-                </p>
-              </form>
-            </SpotlightCard>
+            <ContactForm />
           </ScrollReveal>
         </div>
       </section>
 
-      {/* LOOKING FOR */}
       <section>
         <div className="container">
           <ScrollReveal className="sec-head">
@@ -357,30 +159,6 @@ export default function ContactPage() {
           >
             <ScrollReveal>
               <SpotlightCard style={{ padding: "32px" }}>
-                <div
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "12px",
-                    background: "var(--accent-soft)",
-                    display: "grid",
-                    placeItems: "center",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="var(--accent)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
                 <h3
                   style={{
                     fontFamily: "var(--font-display)",
@@ -390,45 +168,14 @@ export default function ContactPage() {
                 >
                   impactful work
                 </h3>
-                <p
-                  style={{
-                    color: "var(--muted)",
-                    fontSize: ".88rem",
-                    lineHeight: 1.7,
-                  }}
-                >
-                  Systems that scale, solve real problems, and ship to real
-                  users. Not feature factories.
+                <p style={{ color: "var(--muted)", fontSize: ".88rem", lineHeight: 1.7 }}>
+                  Systems that scale, solve real problems, and ship to real users. Not
+                  feature factories.
                 </p>
               </SpotlightCard>
             </ScrollReveal>
-
             <ScrollReveal delay=".08s">
               <SpotlightCard style={{ padding: "32px" }}>
-                <div
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "12px",
-                    background: "var(--accent-soft)",
-                    display: "grid",
-                    placeItems: "center",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="var(--accent)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
                 <h3
                   style={{
                     fontFamily: "var(--font-display)",
@@ -438,45 +185,14 @@ export default function ContactPage() {
                 >
                   strong teams
                 </h3>
-                <p
-                  style={{
-                    color: "var(--muted)",
-                    fontSize: ".88rem",
-                    lineHeight: 1.7,
-                  }}
-                >
-                  Engineering cultures that value craft, psychological safety,
-                  and thoughtful technical leadership.
+                <p style={{ color: "var(--muted)", fontSize: ".88rem", lineHeight: 1.7 }}>
+                  Engineering cultures that value craft, psychological safety, and
+                  thoughtful technical leadership.
                 </p>
               </SpotlightCard>
             </ScrollReveal>
-
             <ScrollReveal delay=".16s">
               <SpotlightCard style={{ padding: "32px" }}>
-                <div
-                  style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "12px",
-                    background: "var(--accent-soft)",
-                    display: "grid",
-                    placeItems: "center",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="var(--accent)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
                 <h3
                   style={{
                     fontFamily: "var(--font-display)",
@@ -486,15 +202,9 @@ export default function ContactPage() {
                 >
                   remote or relocation
                 </h3>
-                <p
-                  style={{
-                    color: "var(--muted)",
-                    fontSize: ".88rem",
-                    lineHeight: 1.7,
-                  }}
-                >
-                  Happy to work remotely or relocate for the right opportunity.
-                  Flexible on timezone overlap.
+                <p style={{ color: "var(--muted)", fontSize: ".88rem", lineHeight: 1.7 }}>
+                  Happy to work remotely or relocate for the right opportunity. Flexible
+                  on timezone overlap.
                 </p>
               </SpotlightCard>
             </ScrollReveal>

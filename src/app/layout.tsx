@@ -3,6 +3,8 @@ import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
+import { SITE } from "@/data/site";
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
@@ -24,18 +26,62 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Abhijeet Rana — Full Stack Engineer",
-  description: "Full-stack engineer with 2+ years building production systems in Node.js, React, AWS and AI. Open to senior roles and contract work.",
-  metadataBase: new URL("https://abhijeetrana.com"),
+  title: {
+    default: `${SITE.name} — Full Stack Engineer`,
+    template: `%s · ${SITE.name}`,
+  },
+  description: SITE.description,
+  metadataBase: new URL(SITE.url),
   alternates: {
-    canonical: "/",
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
   },
   openGraph: {
     type: "website",
-    title: "Abhijeet Rana — Full Stack Engineer",
+    title: `${SITE.name} — Full Stack Engineer`,
     description: "Building resilient backend systems and delightful frontends.",
-    url: "https://abhijeetrana.com/",
+    url: SITE.url,
+    siteName: SITE.name,
+    locale: "en_US",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: `${SITE.name} — Full Stack Engineer`,
+      },
+    ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} — Full Stack Engineer`,
+    description: SITE.description,
+    images: ["/opengraph-image"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  authors: [{ name: SITE.name, url: SITE.url }],
+  creator: SITE.name,
+  keywords: [
+    "full stack engineer",
+    "Node.js",
+    "React",
+    "AWS",
+    "TypeScript",
+    "serverless",
+    "AI invoice",
+    SITE.name,
+  ],
 };
 
 export default function RootLayout({
@@ -59,10 +105,14 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <JsonLd />
+        <a className="skip-link" href="#content">
+          Skip to content
+        </a>
         <div className="bg-grid" aria-hidden="true" />
         <div className="bg-glow" aria-hidden="true" />
         <Nav />
-        {children}
+        <div id="content">{children}</div>
         <Footer />
       </body>
     </html>
