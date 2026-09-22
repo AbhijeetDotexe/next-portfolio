@@ -13,7 +13,7 @@ import { SITE } from "@/data/site";
 export const metadata: Metadata = {
   title: "Writing",
   description:
-    "Essays on queues, invoice extraction, self-hosted functions, replayable workers, and production observability.",
+    "Essays on queues, distributed systems, self-hosted functions, replayable workers, and production observability.",
   keywords: [
     "software architecture",
     "AWS SQS",

@@ -78,8 +78,10 @@ export const metadata: Metadata = {
     "React",
     "AWS",
     "TypeScript",
-    "serverless",
-    "AI invoice",
+    "Redis",
+    "distributed systems",
+    "real-time telematics",
+    "system architecture",
     SITE.name,
   ],
 };

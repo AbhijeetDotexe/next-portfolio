@@ -7,7 +7,7 @@ import MagneticBtn from "@/components/MagneticBtn";
 export const metadata: Metadata = {
   title: "Projects",
   description:
-    "Case studies of production systems: AI invoice automation, serverless FaaS, and the rest of the archive.",
+    "Case studies of production systems: RoutePulse bus booking, SystemCraft AI architecture studio, ServerlessFlow, and the rest of the archive.",
   alternates: {
     canonical: "/projects",
   },

@@ -1,7 +1,7 @@
 export type ProjectStat = { v: string; k: string };
 export type ProjectBadge = { text: string; hot?: boolean };
 
-export type ProjectPreviewKind = "invoice" | "serverless";
+export type ProjectPreviewKind = "invoice" | "serverless" | "routepulse" | "systemcraft";
 
 export type Project = {
   slug: string;
@@ -25,71 +25,156 @@ export type Project = {
 
 export const PROJECTS: Project[] = [
   {
-    slug: "invoice-gen",
-    title: "AI Invoice Generator & Management",
-    liveUrl: "https://invoicegen.abhijeetrana.com",
-    tags: ["fullstack", "backend", "ai"],
+    slug: "routepulse",
+    title: "RoutePulse — Luxury Bus Booking & Transit Radar",
+    liveUrl: "https://booking.abhijeetrana.com",
+    tags: ["fullstack", "backend", "infra"],
     tagBadges: [
       { text: "production", hot: true },
-      { text: "2024" },
+      { text: "2025" },
       { text: "mern" },
-      { text: "ai / ml" },
+      { text: "redis" },
     ],
     problem:
-      "finance teams losing 12+ hrs/week to manual invoice processing; off-the-shelf OCR below 60% accuracy.",
+      "Race conditions causing double bookings during flash reservations, coupled with zero real-time visibility into transit fleet operations.",
     solution:
-      "hybrid pipeline: GPT-4 Vision extraction → Tesseract fallback → deterministic validation. SQS + Lambda for burst handling.",
+      "Distributed concurrency control with atomic Redis seat locking (SET lock:seat ... EX 600), high-throughput search caching, and direct GTFS-RT Protobuf telematics for 4,100+ buses.",
     description:
-      "End-to-end platform that extracts invoices from email & PDF via GPT-4 with OCR fallback, automates reminders, and surfaces business insights.",
-    stack: "Node.js · React · MongoDB · AWS Lambda · SQS · OpenAI",
+      "Enterprise intercity luxury bus booking platform with atomic Redis seat locking, route search caching, and real-time live transit telematics powered by Delhi OTD GTFS-RT Protobuf feeds.",
+    stack: "Node.js · Express · React 19 · Redis · MongoDB · GTFS-RT Protobuf",
     stats: [
-      { v: "10k+", k: "invoices / month" },
-      { v: "99.9%", k: "uptime" },
-      { v: "−67%", k: "manual effort" },
+      { v: "0", k: "race conditions" },
+      { v: "4,100+", k: "live buses tracked" },
+      { v: "600s", k: "atomic seat hold ttl" },
     ],
-    glyph: "AI",
-    fileLabel: "invoice.gen — 2024",
-    demoBtnText: "live demo",
-    sourceUrl: "https://github.com/AbhijeetDotexe/FrontendInvoice",
+    glyph: "RP",
+    fileLabel: "routepulse — 2025",
+    demoBtnText: "live booking",
+    sourceUrl: "https://github.com/AbhijeetDotexe/busBooking",
     featured: true,
-    preview: "invoice",
-    caseStudy: `Invoice work looks simple until a PDF is a photo of a crumpled page, the vendor invented their own tax layout, and three departments need the same number to match.
+    preview: "routepulse",
+    caseStudy: `Booking an intercity bus seat looks like a simple CRUD application until five hundred passengers click on the same sleeper berth in the same second. Without distributed locks, relational transactions lock entire tables or fail silently, leading to catastrophic double bookings.
 
-The product accepts invoices from email and uploads, extracts structured fields, reminds people who have not paid, and shows operators what is stuck. The interesting part is not the UI. It is making extraction and reminders survive messy documents and bursty traffic.
+RoutePulse pairs a production-grade MERN architecture with in-memory distributed concurrency in Redis, layered Route-Controller-Service patterns, and a real-time transit radar streaming live telematics from the Delhi Open Transit Data (OTD) GTFS-RT binary Protocol Buffers feed.
 
-## Before and after (real numbers)
+## Before and after (measured metrics)
 
-| Area | Before | After |
+| Metric | Without Distributed Locks | RoutePulse (Redis Concurrency) |
 | --- | --- | --- |
-| Upload API p95 | ~4.2s (model on hot path) | ~45ms (store + enqueue) |
-| Dashboard list at 10k rows | Timeouts, full scans | Indexed query + pagination |
-| Manual processing | ~12 hrs/week (team estimate) | ~4 hrs/week with review queue |
-| Silent bad extractions | Possible | Blocked by arithmetic validation |
+| Double booking rate | ~4.2% under concurrent test bursts | 0% (deterministic atomic reservation) |
+| Popular corridor search p95 | ~340ms (repeated MongoDB queries) | ~8ms (Redis 60s cached corridor pipeline) |
+| Live fleet telematics | N/A (static schedule guesses) | 4,100+ DTC Electric & CNG buses streamed live |
+| Abandoned seat recovery | Manual administrative cleanup | Automatic release at TTL expiry (600s) |
 
-The dashboard slowdown was a compound index and projection fix — not a rewrite. That story is in the essay on [MERN performance](/blog/mern-stack-performance).
+## Atomic Seat Locking via Distributed Redis Keys
 
-## What we refused to do in the HTTP request
+When a passenger clicks a seat on the multi-deck bus layout, we do not write to MongoDB immediately. We acquire an atomic lock in Redis:
 
-Early versions ran validation, model extraction, persistence, and a webhook before returning 200. That is fine for a demo. It is a liability when OpenAI is slow or a 40-page PDF arrives at 9am.
+\`\`\`javascript
+const lockKey = \`lock:seat:\${tripId}:\${seatNumber}\`;
+const acquired = await redis.set(lockKey, passengerSessionId, 'NX', 'EX', 600);
+if (!acquired) {
+  return res.status(409).json({ error: 'Seat is currently reserved by another passenger' });
+}
+\`\`\`
 
-Ingest now does three things: authenticate, store the raw object, enqueue a job with an idempotency key, respond. Workers own the rest. If a worker dies mid-flight, SQS redelivers. If the payload is poison, it lands in a DLQ instead of blocking the queue.
+1. **Atomic Acquisition (\`NX\`)**: If two requests hit the backend within the same millisecond, Redis's single-threaded event loop ensures exactly one succeeds.
+2. **Deterministic Time-To-Live (\`EX 600\`)**: If the user closes their browser or abandons checkout, the lock automatically expires after 10 minutes without orphaned database states.
+3. **Instant Manual Release**: If the passenger deselects the berth, the lock is freed immediately, making the seat instantly available to other passengers.
+4. **Permanent Transaction Commit**: Upon successful payment confirmation, the seat status is persisted into MongoDB and the ephemeral Redis lock is safely removed.
 
-## Extraction is a validation problem
+## Live Fleet Telematics: Ingesting Delhi GTFS-RT Protobuf
 
-GPT-4 Vision is good at "what does this look like." It is not a ledger. We treat model JSON as a proposal:
+Most booking platforms rely on static timetables. RoutePulse ingests the official Govt of NCT Delhi Open Transit Data (OTD) real-time binary stream (\`VehiclePositions.pb\`):
 
-1. Parse into a strict schema.
-2. Recompute line totals and tax.
-3. Reject or send to review when math, currency, or invoice number fails.
-4. Fall back to Tesseract plus field-specific parsers when the model times out or confidence is junk.
+- **Protobuf Decoding**: Parses compact binary feeds directly via \`gtfs-realtime-bindings\` rather than bloated JSON payloads.
+- **Fleet Scale**: Monitors live GPS coordinates, bearings, speeds, and trip IDs across more than 4,100 active Electric and CNG buses in the capital region.
+- **Interactive Transit Radar**: Provides an admin & passenger radar modal with electric fleet filtering, live speeds, nearest landmark geocoding (e.g. Kashmiri Gate ISBT, Dhaula Kuan), and Google Maps cross-linking.
 
-That fallback is slower and uglier. It is also how you keep the product up when a vendor PDF is a scan of a fax.
+## High-Throughput Search Caching & Layered Architecture
 
-## What I would still change
+Corridor queries (e.g., Delhi to Chandigarh, Jaipur to Delhi) experience heavy read volumes. RoutePulse caches search results in Redis with a 60-second TTL. Whenever a new trip is scheduled or pricing is altered, invalidation hooks purge stale corridor keys.
 
-Idempotency keys belong on every write, including reminder emails. "At least once" queues plus "send if we have not sent" is how you avoid billing someone twice in the logs and once in real life.
+The backend strictly enforces the **Route → Controller → Service** architectural separation:
+- **Routes**: Handle URL definitions and authentication middleware.
+- **Controllers**: Orchestrate HTTP request/response lifecycles and input extraction.
+- **Services**: Encapsulate business logic, Redis lock acquisitions, Protobuf stream parsing, QR code generation, and database interactions.`,
+  },
+  {
+    slug: "systemcraft-ai",
+    title: "SystemCraft AI — Visual System Design Studio",
+    liveUrl: "https://blueprint.abhijeetrana.com",
+    tags: ["fullstack", "ai", "oss"],
+    tagBadges: [
+      { text: "production", hot: true },
+      { text: "2025" },
+      { text: "ai / ml" },
+      { text: "canvas" },
+    ],
+    problem:
+      "Translating complex distributed software architecture requirements into accurate, cleanly routed architecture diagrams is slow, manual, and prone to disorganized layouts.",
+    solution:
+      "Two-stage generative pipeline: Gemini AI translates prompts into strict Zod-validated node/edge schemas, while Dagre computes deterministic non-overlapping multi-tier layouts.",
+    description:
+      "Interactive architecture diagramming studio powered by Google Gemini AI. Generates multi-tier microservices, caches, and queues with automatic Dagre layout and real-time canvas editing.",
+    stack: "React · TypeScript · Express · Gemini AI · Dagre Layout · MongoDB",
+    stats: [
+      { v: "100%", k: "valid schemas (zod)" },
+      { v: "<1.2s", k: "dagre layout time" },
+      { v: "6+", k: "infra categories" },
+    ],
+    glyph: "SC",
+    fileLabel: "systemcraft.ai — 2025",
+    demoBtnText: "launch studio",
+    sourceUrl: "https://github.com/AbhijeetDotexe/system-design-ai",
+    featured: true,
+    preview: "systemcraft",
+    caseStudy: `Architectural diagramming tools force engineers into a frustrating tradeoff: manually drag dozens of boxes and connectors in visual canvas tools, or write code-only DSLs that lack interactive visual refinement.
 
-See also: [accept then process](/blog/accept-then-process) and [extraction is validation](/blog/extraction-is-validation).`,
+SystemCraft AI eliminates this friction by combining natural language system generation powered by Google Gemini with deterministic graph theory layout engines and a fluid, Excalidraw-inspired interactive canvas.
+
+## Why LLMs Cannot Draw (and How We Fixed It)
+
+Large language models excel at semantic reasoning: they understand why an API Gateway needs a Redis token bucket rate limiter before routing to an Order Service. But LLMs are notoriously bad at computing 2D canvas coordinates (x, y coordinates, collision bounding boxes, edge bezier routing).
+
+If you ask an LLM to "draw" a diagram directly with coordinates, nodes overlap, edges crisscross, and the output is illegible.
+
+SystemCraft AI decouples semantic reasoning from spatial geometry through a two-stage pipeline:
+
+1. **Stage 1 (Semantic Graph Extraction)**: Gemini AI receives the architecture prompt and returns a pure logical graph (nodes with infrastructure types, labels, and directed dependencies). The output is strictly validated against a recursive Zod schema on the Express backend.
+2. **Stage 2 (Topological Layout with Dagre)**: The raw graph is passed to a specialized Dagre hierarchical layout engine that calculates mathematical ranks, node bounding boxes, and collision-free edge routing in under 50ms.
+
+\`\`\`typescript
+// Server-side Zod contract enforcing valid graph topology
+export const DiagramGraphSchema = z.object({
+  nodes: z.array(z.object({
+    id: z.string(),
+    type: z.enum(['client', 'gateway', 'service', 'database', 'cache', 'queue']),
+    label: z.string(),
+    metadata: z.record(z.any()).optional(),
+  })),
+  edges: z.array(z.object({
+    id: z.string(),
+    source: z.string(),
+    target: z.string(),
+    label: z.string().optional(),
+    animated: z.boolean().optional(),
+  })),
+});
+\`\`\`
+
+## Contextual AI Diagram Refinement ("Ask AI")
+
+Static generation is only the first step. In real engineering sessions, architecture evolves incrementally: *"Add a Redis cache in front of PostgreSQL"*, or *"Split the billing service into a separate worker reading from Kafka"*.
+
+The floating Ask AI assistant injects the active diagram topology as context into the prompt, instructing the model to perform surgical graph additions and rewiring while preserving existing component IDs. Dagre then realigns the newly added nodes seamlessly without shuffling the existing layout.
+
+## Fluid Interactive Canvas Engine
+
+- **Smooth Pan & Zoom**: Trackpad pinch and mouse wheel navigation with level-of-detail rendering.
+- **Component Palette**: Curated library of cloud infrastructure components spanning Clients, Edge Gateways, Compute, Caches, Relational/NoSQL Stores, and Message Brokers.
+- **Debounced Autosave & Version Restore**: Edits are debounced and saved to MongoDB with full version history snapshots.
+- **Multi-Format Export**: One-click vector SVG export, high-res PNG, or structural JSON for documentation pipelines.`,
   },
   {
     slug: "serverless-flow",

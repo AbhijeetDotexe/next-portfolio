@@ -51,9 +51,9 @@ export default function Home() {
             </h1>
             <ScrollReveal>
               <p className="lead">
-                Currently architecting AI-powered invoice automation and an
-                open-source serverless platform — with Node.js, React,
-                TypeScript and AWS.
+                Currently architecting RoutePulse (real-time bus booking & transit radar)
+                and SystemCraft AI (visual system design studio) — with React,
+                TypeScript, Node.js, and Redis.
               </p>
             </ScrollReveal>
             <ScrollReveal delay=".12s" className="hero-cta">
@@ -167,10 +167,10 @@ export default function Home() {
                   <i></i>building
                 </h4>
                 <ul>
-                  <li>Scaling AI Invoice Gen past 10k invoices/month</li>
+                  <li>RoutePulse — scaling live radar across 4,100+ Delhi buses</li>
+                  <li>SystemCraft AI — collaborative visual architecture studio</li>
                   <li>ServerlessFlow v2 — custom runtimes & edge deploys</li>
-                  <li>Writing on event-driven Node.js architectures</li>
-                  <li>Exploring Rust for edge compute runtimes</li>
+                  <li>Exploring Rust for high-throughput edge proxies</li>
                 </ul>
               </SpotlightCard>
             </ScrollReveal>
