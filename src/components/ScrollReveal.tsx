@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -8,6 +8,10 @@ interface ScrollRevealProps {
   delay?: string;
   style?: React.CSSProperties;
   as?: React.ElementType;
+}
+
+function supportsViewTimeline() {
+  return typeof CSS !== "undefined" && CSS.supports("animation-timeline", "view()");
 }
 
 export default function ScrollReveal({
@@ -18,20 +22,34 @@ export default function ScrollReveal({
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || supportsViewTimeline()) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reveal = () => el.classList.add("in");
+
+    if (reduced) {
+      reveal();
+      return;
+    }
+
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
+      reveal();
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("in");
+            reveal();
             observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+      { threshold: 0.08, rootMargin: "0px 0px -8% 0px" },
     );
 
     observer.observe(el);

@@ -32,7 +32,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Node.js",
       "web performance",
     ],
-    cover: { motif: "mern", accent: "#5b8def", label: "measure each layer" },
+    cover: { motif: "mern", accent: "#8d97a3", label: "measure each layer" },
     summary:
       "The wins that actually moved the needle on a production MERN app: indexes before microservices, route-level code splitting, pagination defaults, and stopping the N+1 populate spiral.",
     markdown: `Every slow MERN app I have debugged had the same opening act: the team debated Redis, a CDN, or "maybe we need Go," while one Mongo query scanned a million documents and the React bundle shipped every chart library on npm.
@@ -145,7 +145,7 @@ The MERN stack is enough for a lot of production software. Make each layer hones
       "Node.js workers",
       "dead letter queue",
     ],
-    cover: { motif: "queue", accent: "#3ecf8e", label: "ingest ≠ workflow" },
+    cover: { motif: "queue", accent: "#a39a8d", label: "ingest ≠ workflow" },
     summary:
       "Why invoice ingest should return in tens of milliseconds, how SQS plus an idempotency key beats a heroic HTTP handler, and when Kafka is the wrong default.",
     markdown: `The first version of our invoice pipeline did the honest thing: a request came in, we validated the file, called a model, wrote to MongoDB, and fired a webhook. Then we returned 200.
@@ -230,7 +230,7 @@ If you are still extracting invoices inside \`POST /upload\`, move the file, enq
       "validation",
       "accounts payable automation",
     ],
-    cover: { motif: "vision", accent: "#5b8def", label: "propose → prove" },
+    cover: { motif: "vision", accent: "#8d97a3", label: "propose → prove" },
     summary:
       "GPT-4 Vision proposes fields. Arithmetic, schema, and a human queue decide what is true. OCR is the fallback, not the strategy.",
     markdown: `People ask how we "use AI for invoices." The honest answer is: we use a model to guess, then we refuse to believe it.
@@ -317,7 +317,7 @@ The drop in manual effort we talk about on the project page came from this shape
       "Docker",
       "self-hosted serverless",
     ],
-    cover: { motif: "pool", accent: "#3ecf8e", label: "hit rate > mythology" },
+    cover: { motif: "pool", accent: "#9aa39a", label: "hit rate > mythology" },
     summary:
       "Self-hosted functions feel fast when you keep warm containers and measure spawn time. They feel like Lambda's worst days when you boot Docker per request.",
     markdown: `Cold start is not a myth. It is also not a single number. When we built ServerlessFlow — a self-hosted FaaS on OpenWhisk and Docker — the useful move was to stop arguing about serverless and start timing the three phases of a start.
@@ -386,7 +386,7 @@ If a vendor's cold start bothers you, you can buy provisioned concurrency — or
       "observability",
       "side effects",
     ],
-    cover: { motif: "ledger", accent: "#c084fc", label: "replay without fear" },
+    cover: { motif: "ledger", accent: "#a396a3", label: "replay without fear" },
     summary:
       "Retries, poison messages, and 3am debugging all get easier when a job is a pure function of stored inputs — not of whatever the process happened to remember.",
     markdown: `The best complement to a queue is a worker that does not mind running twice. The worst is a worker that "mostly" does.
@@ -455,7 +455,7 @@ If the answer is no, the queue is a delay line for a request handler you did not
       "distributed systems",
       "Node.js production",
     ],
-    cover: { motif: "signals", accent: "#e0a15c", label: "signals over dashboards" },
+    cover: { motif: "signals", accent: "#b09a86", label: "signals over dashboards" },
     summary:
       "Pretty Grafana boards do not wake you for the right outage. Queue age, DLQ depth, and validation fail rate do — here is the small set we actually page on.",
     markdown: `The first dashboard I built for the invoice platform had twelve panels. CPU, memory, Node event-loop lag, HTTP p99, Mongo connections, Lambda duration, SQS visible messages, and a sparkline nobody could explain.

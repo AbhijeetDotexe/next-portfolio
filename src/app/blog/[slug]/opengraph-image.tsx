@@ -19,7 +19,7 @@ export default async function Image({
   const post = getPost(slug);
   const title = post?.title ?? SITE.name;
   const category = post?.category ?? "writing";
-  const accent = post?.cover.accent ?? "#3ecf8e";
+  const accent = post?.cover.accent ?? "#d6d2cb";
   const summary = post?.summary ?? SITE.description;
   const shortSummary =
     summary.length > 120 ? `${summary.slice(0, 117)}…` : summary;
@@ -34,8 +34,8 @@ export default async function Image({
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "64px 72px",
-          background: `radial-gradient(circle at 85% 20%, ${accent}55 0%, transparent 42%), radial-gradient(circle at 10% 90%, ${accent}22 0%, transparent 40%), #0a0f0c`,
-          color: "#e9ede9",
+          background: `radial-gradient(circle at 85% 20%, ${accent}33 0%, transparent 42%), radial-gradient(circle at 10% 90%, ${accent}18 0%, transparent 40%), #121212`,
+          color: "#eceae6",
         }}
       >
         <div
@@ -61,7 +61,7 @@ export default async function Image({
             style={{
               display: "flex",
               fontSize: 18,
-              color: "#9aa69d",
+              color: "#a6a39d",
               border: `1px solid ${accent}`,
               borderRadius: 999,
               padding: "8px 18px",
@@ -92,7 +92,7 @@ export default async function Image({
             style={{
               display: "flex",
               fontSize: 24,
-              color: "#9aa69d",
+              color: "#a6a39d",
               lineHeight: 1.4,
             }}
           >

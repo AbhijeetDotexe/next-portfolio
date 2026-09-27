@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 interface SpotlightCardProps {
   children: React.ReactNode;
@@ -17,21 +17,37 @@ export default function SpotlightCard({
 }: SpotlightCardProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const r = ref.current.getBoundingClientRect();
-    ref.current.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    ref.current.style.setProperty("--my", `${e.clientY - r.top}px`);
-  };
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
+    let frame = 0;
+    let x = 0;
+    let y = 0;
+
+    const paint = () => {
+      frame = 0;
+      el.style.setProperty("--mx", `${x}px`);
+      el.style.setProperty("--my", `${y}px`);
+    };
+
+    const onMove = (event: PointerEvent) => {
+      const rect = el.getBoundingClientRect();
+      x = event.clientX - rect.left;
+      y = event.clientY - rect.top;
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    el.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      el.removeEventListener("pointermove", onMove);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
 
   return (
-    <div
-      ref={ref}
-      className={`card spotlight ${className}`}
-      onMouseMove={handleMouseMove}
-      style={style}
-      onClick={onClick}
-    >
+    <div ref={ref} className={`card spotlight ${className}`} style={style} onClick={onClick}>
       {children}
     </div>
   );

@@ -16,18 +16,18 @@ export default function OpenGraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px",
-          background: "#0a0f0c",
-          color: "#e9ede9",
+          background: "#121212",
+          color: "#eceae6",
         }}
       >
-        <div style={{ fontSize: 28, letterSpacing: 4, textTransform: "uppercase", color: "#3ecf8e" }}>
+        <div style={{ fontSize: 28, letterSpacing: 4, textTransform: "uppercase", color: "#d6d2cb" }}>
           {SITE.name}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ fontSize: 64, lineHeight: 1.1, fontStyle: "italic" }}>
             Resilient backends. Delightful frontends.
           </div>
-          <div style={{ fontSize: 28, color: "#9aa69d" }}>{SITE.url.replace("https://", "")}</div>
+          <div style={{ fontSize: 28, color: "#a6a39d" }}>{SITE.url.replace("https://", "")}</div>
         </div>
       </div>
     ),

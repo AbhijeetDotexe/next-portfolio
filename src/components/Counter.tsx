@@ -19,6 +19,7 @@ export default function Counter({
 }: CounterProps) {
   const [val, setVal] = useState<string>("0");
   const ref = useRef<HTMLSpanElement>(null);
+  const valueRef = useRef<HTMLSpanElement>(null);
 
   const dec =
     decimals !== undefined
@@ -46,10 +47,12 @@ export default function Counter({
 
           const t0 = performance.now();
           const step = (t: number) => {
-            const p = Math.min(1, (t - t0) / 1500);
-            const ease = 1 - Math.pow(1 - p, 3);
-            setVal((end * ease).toFixed(dec));
+            const p = Math.min(1, (t - t0) / 1100);
+            const ease = 1 - Math.pow(1 - p, 4);
+            const next = (end * ease).toFixed(dec);
+            if (valueRef.current) valueRef.current.textContent = next;
             if (p < 1) requestAnimationFrame(step);
+            else setVal(next);
           };
           requestAnimationFrame(step);
         });
@@ -64,7 +67,7 @@ export default function Counter({
   return (
     <span ref={ref} className={className}>
       {prefix && <b>{prefix}</b>}
-      {val}
+      <span ref={valueRef}>{val}</span>
       {suffix && <b>{suffix}</b>}
     </span>
   );

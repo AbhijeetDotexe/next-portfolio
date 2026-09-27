@@ -11,12 +11,22 @@ export default function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    let frame = 0;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 24);
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const next = window.scrollY > 24;
+        setScrolled((current) => (current === next ? current : next));
+      });
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   const toggleMenu = () => {

@@ -76,7 +76,7 @@ export default function BlogSubscribe() {
             width: "100%",
             margin: 0,
             fontSize: ".85rem",
-            color: status === "success" ? "var(--accent)" : "#e74c3c",
+            color: status === "success" ? "var(--accent)" : "#c48982",
           }}
         >
           {message}

@@ -72,14 +72,14 @@ export default function ContactForm() {
             lineHeight: 1.5,
             background:
               statusMessage.type === "success"
-                ? "rgba(46, 204, 113, 0.12)"
-                : "rgba(231, 76, 60, 0.12)",
+                ? "rgba(90, 122, 98, 0.14)"
+                : "rgba(168, 92, 84, 0.14)",
             border: `1px solid ${
               statusMessage.type === "success"
-                ? "rgba(46, 204, 113, 0.3)"
-                : "rgba(231, 76, 60, 0.3)"
+                ? "rgba(90, 122, 98, 0.35)"
+                : "rgba(168, 92, 84, 0.35)"
             }`,
-            color: statusMessage.type === "success" ? "#2ecc71" : "#e74c3c",
+            color: statusMessage.type === "success" ? "#6d8f78" : "#c48982",
           }}
         >
           {statusMessage.text}
